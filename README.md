@@ -1,6 +1,6 @@
 # Network Fixer
 
-The tool will enable network access for checkra1n and cydia in iOS 13. 
+The tool will enable network access for Chinese iPhones in iOS 12 or iOS 13. 
 
 ## Background
 
@@ -10,14 +10,15 @@ The tool will enable network access for checkra1n and cydia in iOS 13.
 
 * In iOS 13, the related APIs were moved from `Preferences.framework` to `SettingsCellular.framework`.
 
-## Supported (Verified)
+## Supported
 
-* iPhone 7 + iOS 13.1.3
+* iOS 12
+* iOS 13
 
 ## How to Use
 
 ```bash
-dpkg -i com.rockqj.networkfixer_x.x.x-x_iphoneos-arm.deb
+networkfixer com.example.bundleid
 ```
 
 You can find latest deb file in `packages` or you may want build it on your own.

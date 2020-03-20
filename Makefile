@@ -1,5 +1,5 @@
-export TARGET=iphone:clang::13
-export ARCHS=arm64
+export TARGET=iphone:clang::12
+export ARCHS=arm64 arm64e
 export DEBUG=0
 
 include $(THEOS)/makefiles/common.mk
@@ -13,4 +13,4 @@ $(TOOL_NAME)_CODESIGN_FLAGS = -Sent.plist
 include $(THEOS_MAKE_PATH)/tool.mk
 
 after-install::
-	install.exec "/usr/bin/networkfixer"
+	install.exec "/usr/bin/networkfixer com.saurik.Cydia kjc.loader"

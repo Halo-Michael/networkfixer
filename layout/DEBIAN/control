@@ -1,9 +1,15 @@
-Package: com.rockqj.networkfixer
+Package: com.michael.networkfixer
 Name: networkfixer
 Version: 1.0.0
 Architecture: iphoneos-arm
-Description: Enable network access of cydia and checkra1n
-Maintainer: rockqj
-Author: rockqj
+Description: Fix app network error for China models.
+ Fix app network error for China models.
+ A simple executable to fix app network error for China models.
+ Support iOS12 and iOS13
+ How to use:
+ /usr/bin/networkfixer com.example.bundleid
+Maintainer: halo_michael <yc992147156@me.com>
+Author: halo_michael <yc992147156@me.com>
+Conflicts: com.laoyur.network-fixer, com.rockqj.networkfixer
 Section: System
 Tag: role::hacker
