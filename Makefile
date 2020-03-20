@@ -1,4 +1,4 @@
-export TARGET=iphone:clang::12
+export TARGET=iphone:clang::11
 export ARCHS=arm64 arm64e
 export DEBUG=0
 
