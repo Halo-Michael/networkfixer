@@ -8,6 +8,7 @@ Description: Fix app network error for China models.
  Support iOS12 and iOS13
  How to use:
  /usr/bin/networkfixer com.example.bundleid
+Depends: firmware (>= 12.0)
 Maintainer: halo_michael <yc992147156@me.com>
 Author: halo_michael <yc992147156@me.com>
 Conflicts: com.laoyur.network-fixer, com.rockqj.networkfixer
