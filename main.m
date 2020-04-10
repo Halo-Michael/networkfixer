@@ -1,16 +1,4 @@
-#include <CoreFoundation/CoreFoundation.h>
-#include <stdio.h>
 #include <objc/message.h>
-
-@interface AppWirelessDataUsageManager
-+ (void)setAppCellularDataEnabled:(id)arg1 forBundleIdentifier:(id)arg2 completionHandler:(id)arg3;
-+ (void)setAppWirelessDataOption:(id)arg1 forBundleIdentifier:(id)arg2 completionHandler:(id)arg3;
-@end
-
-@interface PSAppDataUsagePolicyCache
-+ (id)sharedInstance;
-- (bool)setUsagePoliciesForBundle:(id)arg1 cellular:(bool)arg2 wifi:(bool)arg3;
-@end
 
 #ifndef kCFCoreFoundationVersionNumber_iOS_11_0
 #   define kCFCoreFoundationVersionNumber_iOS_11_0 1443.00
@@ -59,13 +47,31 @@ int main(int argc, const char **argv, const char **envp) {
     }
 
     for (NSString *exampleBundleid in args) {
-        if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_12_0) {
-            [[NSClassFromString(@"PSAppDataUsagePolicyCache") sharedInstance] setUsagePoliciesForBundle:exampleBundleid cellular:true wifi:true];
-        } else {
-            [NSClassFromString(@"AppWirelessDataUsageManager") setAppWirelessDataOption:[NSNumber numberWithInt:3] forBundleIdentifier:exampleBundleid completionHandler:nil];
-            [NSClassFromString(@"AppWirelessDataUsageManager") setAppCellularDataEnabled:[NSNumber numberWithInt:1] forBundleIdentifier:exampleBundleid completionHandler:nil];
-        }
         printf("Enable network for %s ...\n", [exampleBundleid UTF8String]);
+        if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_12_0) {
+            Class PSAppDataUsagePolicyCacheClass = NSClassFromString(@"PSAppDataUsagePolicyCache");
+            id cacheInstance = [PSAppDataUsagePolicyCacheClass valueForKey:@"sharedInstance"];
+
+            BOOL result = ((BOOL (*)(id, SEL, NSString *, BOOL, BOOL))objc_msgSend)(cacheInstance, NSSelectorFromString(@"setUsagePoliciesForBundle:cellular:wifi:"), exampleBundleid, true, true);
+            if (!result) {
+                printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
+            } else {
+                printf("Enable network for %s successfully.\n", [exampleBundleid UTF8String]);
+            }
+        } else {
+            Class AppWirelessDataUsageManager = NSClassFromString(@"AppWirelessDataUsageManager");
+            BOOL result = ((BOOL (*)(Class, SEL, NSNumber *, NSString *, id))objc_msgSend)(AppWirelessDataUsageManager, NSSelectorFromString(@"setAppWirelessDataOption:forBundleIdentifier:completionHandler:"), [NSNumber numberWithInt:3], exampleBundleid, nil);
+            if (!result) {
+                printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
+                continue;
+            }
+            result = ((BOOL (*)(Class, SEL, NSNumber *, NSString *, id))objc_msgSend)(AppWirelessDataUsageManager, NSSelectorFromString(@"setAppWirelessDataOption:forBundleIdentifier:completionHandler:"), [NSNumber numberWithInt:1], exampleBundleid, nil);
+            if (!result) {
+                printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
+            } else {
+                printf("Enable network for %s successfully.\n", [exampleBundleid UTF8String]);
+            }
+        }
     }
 	return 0;
 }

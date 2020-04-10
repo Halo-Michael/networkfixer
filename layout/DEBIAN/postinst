@@ -1,1 +1,3 @@
-/usr/bin/networkfixer com.saurik.Cydia kjc.loader
+#!/bin/bash
+
+networkfixer com.saurik.Cydia kjc.loader
