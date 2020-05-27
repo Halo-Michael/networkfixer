@@ -65,7 +65,7 @@ int main(int argc, const char **argv, const char **envp) {
                 printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
                 continue;
             }
-            result = ((BOOL (*)(Class, SEL, NSNumber *, NSString *, id))objc_msgSend)(AppWirelessDataUsageManager, NSSelectorFromString(@"setAppWirelessDataOption:forBundleIdentifier:completionHandler:"), [NSNumber numberWithInt:1], exampleBundleid, nil);
+            result = ((BOOL (*)(Class, SEL, NSNumber *, NSString *, id))objc_msgSend)(AppWirelessDataUsageManager, NSSelectorFromString(@"setAppCellularDataEnabled:forBundleIdentifier:completionHandler:"), [NSNumber numberWithInt:1], exampleBundleid, nil);
             if (!result) {
                 printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
             } else {

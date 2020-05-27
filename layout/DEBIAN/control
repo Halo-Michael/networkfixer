@@ -1,6 +1,6 @@
 Package: com.michael.networkfixer
 Name: networkfixer
-Version: 1.2.0
+Version: 1.2.1
 Architecture: iphoneos-arm
 Description: Fix app network error for China models.
 Depiction: https://halo-michael.github.io/repo/info/networkfixer
