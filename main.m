@@ -1,4 +1,4 @@
-#include <objc/message.h>
+#import <Foundation/Foundation.h>
 
 #ifndef kCFCoreFoundationVersionNumber_iOS_11_0
 #   define kCFCoreFoundationVersionNumber_iOS_11_0 1443.00
@@ -12,9 +12,23 @@
 #   define kCFCoreFoundationVersionNumber_iOS_13_0 1665.15
 #endif
 
+@interface AppWirelessDataUsageManager : NSObject
+
++ (void)setAppCellularDataEnabled:(id)arg1 forBundleIdentifier:(id)arg2 completionHandler:(id /* block */)arg3;
++ (void)setAppWirelessDataOption:(id)arg1 forBundleIdentifier:(id)arg2 completionHandler:(id /* block */)arg3;
+
+@end
+
+@interface PSAppDataUsagePolicyCache : NSObject
+
++ (id)sharedInstance;
+- (bool)setUsagePoliciesForBundle:(id)arg1 cellular:(bool)arg2 wifi:(bool)arg3;
+
+@end
+
 void usage() {
     printf("Usage:\tnetworkfixer [com.example.bundleid]\n");
-    printf("\t-h\t\t\tPrint this help.\n");
+    printf("\t-h\tPrint this help.\n");
 }
 
 int main(int argc, const char **argv, const char **envp) {
@@ -22,16 +36,14 @@ int main(int argc, const char **argv, const char **envp) {
         usage();
         return 1;
     }
-    
-    NSMutableArray *args = [[[NSProcessInfo processInfo] arguments] mutableCopy];
-    [args removeObjectAtIndex:0];
-    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF beginswith '-'"];
-    NSArray *dashedArgs = [args filteredArrayUsingPredicate:pred];
-    for (NSString *argument in dashedArgs) {
-        if ( ![argument caseInsensitiveCompare:@"-h"] ) {
-            usage();
-            return 1;
-        }
+
+    NSMutableArray *args = [NSMutableArray array];
+    for (int i = 1; i < argc; i++) {
+        [args addObject:[[NSString alloc] initWithUTF8String:argv[i]]];
+    }
+    if ([args containsObject:@"-h"]) {
+        usage();
+        return 1;
     }
 
     NSBundle *bundle;
@@ -46,31 +58,18 @@ int main(int argc, const char **argv, const char **envp) {
         return 1;
     }
 
-    for (NSString *exampleBundleid in args) {
-        printf("Enable network for %s ...\n", [exampleBundleid UTF8String]);
+    for (NSString *bundleID in args) {
+        printf("Enable network for %s ...\n", [bundleID UTF8String]);
         if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_12_0) {
-            Class PSAppDataUsagePolicyCacheClass = NSClassFromString(@"PSAppDataUsagePolicyCache");
-            id cacheInstance = [PSAppDataUsagePolicyCacheClass valueForKey:@"sharedInstance"];
-
-            BOOL result = ((BOOL (*)(id, SEL, NSString *, BOOL, BOOL))objc_msgSend)(cacheInstance, NSSelectorFromString(@"setUsagePoliciesForBundle:cellular:wifi:"), exampleBundleid, true, true);
-            if (!result) {
-                printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
+            if ([[NSClassFromString(@"PSAppDataUsagePolicyCache") sharedInstance] setUsagePoliciesForBundle:bundleID cellular:true wifi:true]) {
+                printf("Enable network for %s successfully.\n", [bundleID UTF8String]);
             } else {
-                printf("Enable network for %s successfully.\n", [exampleBundleid UTF8String]);
+                printf("Fail to enable network for %s.\n", [bundleID UTF8String]);
             }
         } else {
-            Class AppWirelessDataUsageManager = NSClassFromString(@"AppWirelessDataUsageManager");
-            BOOL result = ((BOOL (*)(Class, SEL, NSNumber *, NSString *, id))objc_msgSend)(AppWirelessDataUsageManager, NSSelectorFromString(@"setAppWirelessDataOption:forBundleIdentifier:completionHandler:"), [NSNumber numberWithInt:3], exampleBundleid, nil);
-            if (!result) {
-                printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
-                continue;
-            }
-            result = ((BOOL (*)(Class, SEL, NSNumber *, NSString *, id))objc_msgSend)(AppWirelessDataUsageManager, NSSelectorFromString(@"setAppCellularDataEnabled:forBundleIdentifier:completionHandler:"), [NSNumber numberWithInt:1], exampleBundleid, nil);
-            if (!result) {
-                printf("Fail to enable network for %s.\n", [exampleBundleid UTF8String]);
-            } else {
-                printf("Enable network for %s successfully.\n", [exampleBundleid UTF8String]);
-            }
+            [NSClassFromString(@"AppWirelessDataUsageManager") setAppWirelessDataOption:[NSNumber numberWithInt:3] forBundleIdentifier:bundleID completionHandler:nil];
+            [NSClassFromString(@"AppWirelessDataUsageManager") setAppCellularDataEnabled:[NSNumber numberWithInt:1] forBundleIdentifier:bundleID completionHandler:nil];
+            printf("Enable network for %s successfully.\n", [bundleID UTF8String]);
         }
     }
 	return 0;

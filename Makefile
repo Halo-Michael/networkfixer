@@ -13,4 +13,4 @@ $(TOOL_NAME)_CODESIGN_FLAGS = -Sent.plist
 include $(THEOS_MAKE_PATH)/tool.mk
 
 after-install::
-	install.exec "/usr/bin/networkfixer com.saurik.Cydia kjc.loader"
+	install.exec "networkfixer com.saurik.Cydia kjc.loader"
